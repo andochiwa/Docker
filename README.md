@@ -266,3 +266,44 @@ DockerFile是面向开发的，以后发布项目做镜像，就需要编写dock
 
 
 # Docker网络
+
+Docker内置三种网络模式，运行容器时，可以使用–net标志来指定容器应连接到哪些网络
+
+1. host：容器将不会虚拟出自己的网卡，配置自己的IP等，而是使用宿主机的IP和端口。
+2. Container：创建的容器不会创建自己的网卡，配置自己的IP，而是和一个指定的容器共享IP、端口范围。
+3. Bridge（默认）：此模式会为每一个容器分配、设置IP等，并将容器连接到一个docker0虚拟网桥，通过docker0网桥以及Iptables nat表配置与宿主机通信。
+
+## 桥接模式
+
+> 桥接模式（Bridge），使用的技术是**veth-pair**技术
+
+1. 只要安装了docker，都会有一个网卡docker0，每启动一个容器，docker0子网就会给容器分配一个ip
+2. 每启动一个容器也会分配一个网卡，这些网卡都是成对出现的（veth-pair），一端连着协议，一端彼此相连，由这个特性，veth-pair充当一个桥梁，连接着各种虚拟网络设备
+3. docker0相当于交换机，由veth-pair协议与每个容器相连，容器之间的交互通过docker0交换机转发（需要解析），而docker0自身与物理网卡直连
+4. 只要容器删除，对应的一对网桥也随之删除
+
+在bridge模式下，连在同一网桥上的容器可以相互通信（若出于安全考虑，也可以禁止它们之间通信，方法是在DOCKER_OPTS变量中设置–icc=false，这样只有使用–link才能使两个容器通信）。
+
+Docker可以开启容器间通信（意味着默认配置–icc=true），也就是说，宿主机上的所有容器可以不受任何限制地相互通信，这可能导致拒绝服务攻击。进一步地，Docker可以通过–ip_forward和–iptables两个选项控制容器间、容器和外部世界的通信
+
+
+## 自定义网络
+
+使用自定义网络来控制哪些容器可以互相通信，还可以自动解析DNS容器名称到IP地址。Docker提供了创建这些网络的默认网络驱动程序，可以创建一个新的Bridge网络，Overlay或Macvlan网络。还可以创建一个网络插件或远程网络进行完整的自定义和控制。
+
+```shell
+docket network create --driver bridge --subnet <xxx.xxx.xxx.xxx/xx> --gateway <xxx.xxx.xxx.xxx> NET_NAME
+# --driver 网络模式
+# --subnet 子网号
+# --gateway 网关号
+```
+
+## 网络连通
+
+当容器处于不同网关时，如何连通两个容器？
+
+```shell
+docker network connet GATEWAY CONTAINER
+```
+
+连通之后，CONTAINER就会直接放到GATEWAY下，即为一个容器两个IP
