@@ -296,7 +296,11 @@ docket network create --driver bridge --subnet <xxx.xxx.xxx.xxx/xx> --gateway <x
 # --driver 网络模式
 # --subnet 子网号
 # --gateway 网关号
+
+连接时，只需要在run命令后面加上--net NET_NAME
 ```
+
+这样的话，当容器处在同一个自定义网络时，不用解析也能相互访问
 
 ## 网络连通
 
@@ -307,3 +311,48 @@ docker network connet GATEWAY CONTAINER
 ```
 
 连通之后，CONTAINER就会直接放到GATEWAY下，即为一个容器两个IP
+
+
+
+# Docker Compose
+
+[官方文档](https://docs.docker.com/compose/)
+
+当我们微服务过多时，一个个启动效率会非常低，Docker Compose可以轻松高效的管理容器
+
+Docker Compose是一个定义，运行多个容器的组件，通过配置使用yaml文件来管理服务（一键启动）
+
+## 安装
+
+```shell
+sudo curl -L "https://github.com/docker/compose/releases/download/1.28.6/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+## 使用
+
+[看文档！](https://docs.docker.com/compose/gettingstarted/)
+
+## yaml规则
+
+```yaml
+# 3层构造
+
+version: '' 		# 版本
+services: 			# 服务
+	SERVICE1: web
+		# 配置服务
+		images
+		build
+		network
+		...
+		
+	SERVICE2: redis
+		...
+	...
+# 其他配置  网络/卷，全局规则
+volumns:
+networks:
+configs:
+```
+
