@@ -6,6 +6,11 @@
 * [常用命令](#4)
 * [进阶命令](#5)
 * [可视化界面](#6)
+* [Docker镜像](#7)
+* [镜像加载原理](#8)
+* [分层理解](#9)
+* [Commit镜像](#10)
+* [容器数据卷（数据持久化）](#11)
 
 # Docker简述
 
@@ -71,12 +76,13 @@ docker rmi <REPOSITORY | ID ...>		# 删除镜像
 # 容器命令
 docker run <PARAMETER> image	# 启动容器
 ## 参数说明
---name "NAME"		# 容器名字
--d					# 后台方式运行
--it					# 使用交互方式运行，进入容器查看内容
--p					# 指定端口(小写)
--P					# 随机指定端口
--rm					# 用完后删除
+--name "NAME"						# 容器名字
+-d									# 后台方式运行
+-it									# 使用交互方式运行，进入容器查看内容
+-p YOUR_PORT:DOCKER_PORT			# 指定端口(小写)
+-P									# 随机指定端口
+-rm									# 用完后删除
+-v YOUR_PATH:CONTAINER_PATH			# 挂载
 
 exit				# 停止并退出容器
 ctrl + P + Q		# 退出容器
@@ -122,7 +128,7 @@ docker run -d -p 8088:9000 --restart=always -v /var/run/docker.sock:/var/run/doc
 
 
 
-# Docker镜像
+# <span id="7">Docker镜像</span>
 
 镜像是一种轻量级的，可执行的软件包，用来打包软件运行环境和基于运行环境开发的软件，它包含运行某个软件所需的所有内容，包括代码、运行时库、环境变量、配置文件。
 
@@ -134,7 +140,7 @@ docker run -d -p 8088:9000 --restart=always -v /var/run/docker.sock:/var/run/doc
 * 拷贝
 * 自己制作镜像DockerFile
 
-# Docker镜像加载原理
+# <span id="8">Docker镜像加载原理</span>
 
 > UnionFS（联合文件系统）
 
@@ -149,3 +155,62 @@ docker镜像实际上是由一层一层的文件系统组成（UnionFS）
 bootfs（boot file system）主要包含bootloader和kernel，bootloader主要是引导加载kernel，Linux刚启动时会加载bootfs文件系统，在Docker镜像的最低层是bootfs。这一层与我们典型的Linux/Unix系统是一样的，包含boot加载器和内核，当boot加载完成后整个内核就都在内存中，此时内存的使用权已由bootfs转交给内核，系统也会卸载bootfs
 
 rootfs（root file system）在bootfs之上。包含的就是典型Linux系统中的/dev, /proc, /bin, /etc等标准目录和文件。rootfs就是各种不同的操作系统发行版，比如Ubuntu，Centos等。
+
+
+
+# <span id="9">分层理解</span>
+
+下载镜像的时候，可以看到日志输出，是在一层一层的下载
+
+最大的好处是资源共享。多个镜像都从相同的Base镜像构建而来，那么宿主机只需要在磁盘上保留一份Base镜像，同时内存中也只需要加载一份Base内存镜像，这样就可以为所有容器服务，而且镜像的每一层都可以被共享。
+
+所有的Docker镜像都起始于一个基础镜像层，当进行修改或增加新内容时，就会在当前镜像层之上创建新的镜像层。
+
+Docker通过存储引擎（快照机制）来实现镜像层堆栈，并保证多镜像层对外展示为统一的文件系统。
+
+Linux上可用的存储引擎有AUTF、Overlay2、Device Mapper、Btrfs和ZFS。每种存储引擎都基于Linux中对应的文件系统或块设备技术，并且每种存储引擎都有独有的性能特典
+
+Docker在windows上仅支持windowsfilter一种存储引擎，该引擎基于NTFS文件系统纸上实现分层和COW
+
+
+
+# <span id="10">Commit镜像</span>
+
+```shell
+docker commit <CONTAINER> NAME		# 提交容器成为一个新的镜像，以后就可以使用修改过的镜像
+## 参数
+-m "MESSAGE"	# 描述信息
+-a "AUTHOR"		# 作者
+```
+
+
+
+# <span id="11">容器数据卷</span>
+
+docker的理念是把应用和环境打包成一个镜像，如果数据都在容器中，那么如果容器删除，数据就会丢失，我们需要做一些数据持久化
+
+容器之间有一个数据共享技术，Docker容器中产生的数据，同步到本地
+
+这就是卷技术，挂载的目录将在我们容器内的目录挂载到Linux上
+
+## 使用数据卷
+
+在run命令后面加上-v参数
+
+```shell
+docker run -v YOUR_PATH:CONTAINER_PATH
+```
+
+这样在删除容器后，数据也不会丢失
+
+## 具名挂载和匿名挂载
+
+匿名挂载 只写了容器内路径，**这样挂载的路径会是一串哈希码**
+
+```shell
+docker run -v CONTAINER_PATH
+```
+
+具名挂载 写了容器内和容器外路径，**这样挂载的路径是具体路径**
+
+拓展：在CONTAINER_PATH路径加上:ro / :rw等可以变为只读 / 读写
