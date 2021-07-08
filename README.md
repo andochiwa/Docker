@@ -316,11 +316,26 @@ docker network connet GATEWAY CONTAINER
 
 # Docker Compose
 
+## 简介
+
 [官方文档](https://docs.docker.com/compose/)
 
-当我们微服务过多时，一个个启动效率会非常低，Docker Compose可以轻松高效的管理容器
+Compose 项目是 Docker 官方的开源项目，负责实现对 Docker 容器集群的快速编排，从功能上看，跟 OpenStack 中的 Heat 十分类似
 
-Docker Compose是一个定义，运行多个容器的组件，通过配置使用yaml文件来管理服务（一键启动）
+Docker Compose 的定位是【定义和运行多个Docker容器的应用（Defining and running multi-container Docker Applications）】
+
+我们知道使用一个`Dockerfile`模板文件，可以让用户很方便的定义一个单独的应用容器。然而在实际场景中，经常会碰到需要多个容器相互配合来完成某项任务的情况。例如要实现一个 Web 项目，除了 Web 服务容器本身，往往还需要再加上数据库服务容器，负载均衡容器等。
+
+Docker Compose 恰好满足了这样的需求，它允许用户通过一个单独的`docker-compose.yml`模板文件来定义一组相关联的应用容器为一个项目
+
+Docker Compose 中有两个重要的概念
+
+* 服务（service）：一个应用的容器，实际上可以包含若干运行相同镜像的容器实例
+* 项目（project）：由一组关联的应用容器组成的一个完整业务单元，在`docker-compose.yml`中定义
+
+Docker Compose 的默认管理对象是项目，通过子命令对项目中的一组容器进行便捷地生命周期管理
+
+Docker Compose 由 Python 编写，实现上调用了 Docker 服务提供的 API 来对容器进行管理，因此，只要所操作的平台支持 Docker API，就可以利用 Docker Compose 来进行编排管理
 
 ## 安装
 
@@ -345,7 +360,7 @@ services: 			# 服务
 		images
 		build
 		network
-		...
+        ...
 		
 	SERVICE2: redis
 		...
