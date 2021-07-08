@@ -354,16 +354,16 @@ sudo chmod +x /usr/local/bin/docker-compose
 # 3层构造
 
 version: '' 			# 版本
-services: 			# 服务
-	SERVICE1: web
-		# 配置服务
-		images
-		build
-		network
+services: 				# 服务
+    SERVICE1: web
+        # 配置服务
+        images
+        build
+        network
         ...
 		
-	SERVICE2: redis
-		...
+    SERVICE2: redis
+        ...
 	...
 # 其他配置  网络/卷，全局规则
 volumns:
