@@ -348,26 +348,25 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 [看文档！](https://docs.docker.com/compose/gettingstarted/)
 
-## yaml规则
+## 简单实例
 
 ```yaml
-# 3层构造
+version: '3.0' # 版本
 
-version: '' 			# 版本
-services: 				# 服务
-    SERVICE1: web
-        # 配置服务
-        images
-        build
-        network
-        ...
+services:      # 服务
+    jenkins:   # 服务名唯一
+        image: jenkins/jenkins:latest # 创建
+        ports:
+          - 8777:8080
+        networks:
+          - test
 
-    SERVICE2: redis
-        ...
-    ...
-# 其他配置  网络/卷，全局规则
-volumns:
 networks:
-configs:
+    test:
 ```
 
+`docker-compose up`
+
+# Docker Compose 模板文件
+
+模板文件是使用 Compose 的核心，涉及
