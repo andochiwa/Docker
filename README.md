@@ -344,29 +344,127 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.28.6/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
-## 使用
-
-[看文档！](https://docs.docker.com/compose/gettingstarted/)
-
-## 简单实例
-
-```yaml
-version: '3.0' # 版本
-
-services:      # 服务
-    jenkins:   # 服务名唯一
-        image: jenkins/jenkins:latest # 创建
-        ports:
-          - 8777:8080
-        networks:
-          - test
-
-networks:
-    test:
-```
-
-`docker-compose up`
-
 # Docker Compose 模板文件
 
-模板文件是使用 Compose 的核心，涉及
+模板文件是使用 Compose 的核心，涉及到的指令关键字比较多，这里大部分指令和`docker run`相关参数的含义都是类似的
+
+默认的模板文件名为`docker-compose.yml`，格式为 yaml
+
+```yaml
+version: "3"
+
+services:
+  webapp:
+    image: IMAGE:TAG
+    ports:
+      - "80:80"
+    volumes:
+      - "/data"
+```
+
+注意每个服务都必须通过`image`指令指定镜像或`build`指令（需要 Dockerfile）等自动构建生成镜像
+
+如果使用`build`指令，在`Dockerfile`中设置的选项（例如: CMD, EXPOSE, VOLUME, ENV）会被自动获取，无需在`docker-compose.yml`中重复设置
+
+各个指令的用法：
+
+## image
+
+指定为镜像名称或镜像 ID。如果镜像在本地不存在，Compose 将尝试拉取这个镜像
+
+```yaml
+image: jenkins/jenkins:latest
+image: abcdfafas # image hash
+```
+
+## ports
+
+暴露端口信息
+
+使用宿主端口：容器端口`HOST:CONTAINER`的格式，或者仅仅指定容器的端口（宿主会随机选择端口）都可以
+
+```yaml
+ports:
+  - "3000"
+  - "8080:8080"
+  - "127.0.0.1:8000:8080"
+```
+
+注意，当使用`HOST:CONTAINER`格式来映射端口时，如果使用的容器端口小于 60 且没有放到引号里，可能会得到错误的结果。因为 yaml 会自动解析 `xx:yy`这种数字格式为60禁止。为避免出现这种问题，建议数字串都采用引号包起来的字符串格式
+
+## volumes
+
+数据卷所挂载路径设置，可以设置为宿主机路径`HOST:CONTAINER`或者数据卷名称`VOLUME:CONTAINER`，并且可以设置访问模式`HOST:CONTAINER:ro`，该指令中路径支持相对路径
+
+```yaml
+volumes:
+  - /var/lib/mysql
+  - /opt/maven:/usr/local/maven
+  - ~/configs:/etc/configs/:ro
+```
+
+如果路径为数据卷名称，必须在文件中设置数据卷
+
+```yaml
+services:
+  mysql:
+    image: mysql:8.0
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:   # 声明指定的卷名，compose自动创建该卷名但是会在之前加入项目名
+    external: # 是否使用自定义卷名
+      false # 默认false，true确定，这样就不会在之前加入项目名，启动服务之前必须手动创建
+```
+
+## networks
+
+配置容器连接的网络
+
+```yaml
+services:
+  mysql:
+    image: mysql:8.0
+    networks:
+      - net
+          
+networks:
+  net:      # 定义上面服务使用的网桥，默认 bridge 模式
+    external:
+      true  # 指定网桥名称不带项目名 注意：网桥必须存在
+```
+
+## container_name
+
+指定容器名称，默认会使用`项目名称_服务名称_序号`的格式
+
+> 注意：指定容器名称后，该服务将无法扩展，因为 Docker 不允许多个容器具有相同的名称
+
+## enviroment
+
+设置环境变量，可以使用数组或字典两种格式
+
+只给定名称的变量会自动获取运行 Compose 主机上对应变量的值，可以用来防止泄露不必要的数据
+
+```yaml
+services:
+  mysql:
+    image: mysql:8.0
+    enviroment:
+      - MYSQL_ROOT_PASSWORD=root
+```
+
+## command
+
+覆盖容器启动后默认执行的命令
+
+```yaml
+services:
+  volumes:
+    - redisdata:/data
+  command: "redis-server --appendonly yes"
+volumes:
+  redisdata:
+```
+
