@@ -49,37 +49,37 @@ DockerServer接收到DockerClient的指令，就会执行这个命令
 
 ```bash
 # 帮助命令
-docker version 				# 显示docker的版本信息
-docker info 				# 显示docker的系统信息
-docker <command> --help  	# 万能命令
+docker version 					# 显示docker的版本信息
+docker info 					# 显示docker的系统信息
+docker <command> --help  			# 万能命令
 
 # 镜像命令
-docker images							# 查看镜像
+docker images					# 查看镜像
 docker search <REPOSITORY[:tag]>		# 搜索镜像
 docker pull <REPOSITORY[:tag]>			# 下载镜像
 docker rmi <REPOSITORY | ID ...>		# 删除镜像
 
 # 容器命令
-docker run <PARAMETER> image	# 启动容器
+docker run <PARAMETER> image			# 启动容器
 ## 参数说明
---name "NAME"						# 容器名字
--d									# 后台方式运行
--it									# 使用交互方式运行，进入容器查看内容
--p YOUR_PORT:DOCKER_PORT			# 指定端口(小写)
--P									# 随机指定端口
--rm									# 用完后删除
--v YOUR_PATH:CONTAINER_PATH			# 挂载
+--name "NAME"				# 容器名字
+-d					# 后台方式运行
+-it					# 使用交互方式运行，进入容器查看内容
+-p YOUR_PORT:DOCKER_PORT		# 指定端口(小写)
+-P					# 随机指定端口
+-rm					# 用完后删除
+-v YOUR_PATH:CONTAINER_PATH		# 挂载
 
-exit				# 停止并退出容器
-ctrl + P + Q		# 退出容器
-docker ps						# 列出所有容器
+exit					# 停止并退出容器
+ctrl + P + Q				# 退出容器
+docker ps					# 列出所有容器
 docker rm CONTAINER				# 删除容器，不能删除正在运行的容器，如果要强制删除加上-f
 docker ps -a -q|xargs docker rm	# 删除所有容器
 
-docker start CONTAINER			# 启动容器
-docker restart CONTAINER		# 重启容器
-docker stop CONTAINER			# 停止正在运行的容器
-docker kill CONTAINER			# 强制停止正在运行的容器
+docker start CONTAINER				# 启动容器
+docker restart CONTAINER			# 重启容器
+docker stop CONTAINER				# 停止正在运行的容器
+docker kill CONTAINER				# 强制停止正在运行的容器
 ```
 
 # <span id="5">Docker进阶命令</span>
@@ -89,13 +89,13 @@ docker kill CONTAINER			# 强制停止正在运行的容器
 
 docker logs <OPTIONS> CONTAINER			# 显示日志
 ## 参数
--tf				# 显示日志时间戳、动态显示日志
+-tf						# 显示日志时间戳、动态显示日志
 --tall number	# 显示日志的条数
 
 docker top <OPTIONS> CONTAINER 			# 显示容器信息
-docker inspect CONTAINER				# 显示容器的元数据
+docker inspect CONTAINER			# 显示容器的元数据
 docker exec -it CONTAINER /bin/bash		# 进入正在运行的容器
-docker attach CONTAINER					# 进入正在运行的容器
+docker attach CONTAINER				# 进入正在运行的容器
 
 docker cp CONTAINER:PATH CPPATH			# 拷贝容器内的文件到主机上 
 ```
@@ -165,8 +165,8 @@ Docker在windows上仅支持windowsfilter一种存储引擎，该引擎基于NTF
 ```shell
 docker commit <CONTAINER> NAME		# 提交容器成为一个新的镜像，以后就可以使用修改过的镜像
 ## 参数
--m "MESSAGE"	# 描述信息
--a "AUTHOR"		# 作者
+-m "MESSAGE"			# 描述信息
+-a "AUTHOR"			# 作者
 ```
 
 
@@ -353,7 +353,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 ```yaml
 # 3层构造
 
-version: '' 		# 版本
+version: '' 			# 版本
 services: 			# 服务
 	SERVICE1: web
 		# 配置服务
