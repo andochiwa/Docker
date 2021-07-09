@@ -4,7 +4,7 @@
 
 docker就是解决这个问题，docker可以在打包时带上环境（镜像），其他环境直接下载发布的镜像就可以了，思想就来自于集装箱，实际就是和虚拟机一样的虚拟化技术
 
-
+[Docker 从入门到实践](https://vuepress.mirror.docker-practice.com/)*
 
 # <span id="1">名词概念</span>
 
