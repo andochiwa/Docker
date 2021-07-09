@@ -468,3 +468,61 @@ volumes:
   redisdata:
 ```
 
+## env_file
+
+从文件中获取环境变量，可以为单独的文件路径或列表，**一般用于敏感信息的隐藏**。
+
+如果通过 `docker-compose -f FILE` 方式来指定 Compose 模板文件，则 `env_file` 中变量的路径会基于模板文件路径。
+
+如果有变量名称与 `environment` 指令冲突，则按照惯例，以后者为准。
+
+```yaml
+env_file: .env
+
+env_file:
+  - ./common.env
+  - ./apps/web.env
+  - /opt/secrets.env
+```
+
+环境变量文件中每一行必须符合格式，支持 `#` 开头的注释行。
+
+```yaml
+# common.env: Set development environment
+PROG_ENV=development
+```
+
+## depends_on
+
+解决容器的依赖、启动先后的问题。以下例子中会先启动 `redis` `db` 再启动 `web`
+
+```yaml
+version: '3'
+
+services:
+  web:
+    build: .
+    depends_on:
+      - db
+      - redis
+
+  redis:
+    image: redis
+
+  db:
+    image: postgres
+```
+
+> 注意：`web` 服务不会等待 `redis` `db` 「完全启动」之后才启动。
+
+## healthcheck
+
+通过命令检查容器是否健康运行。
+
+```yaml
+healthcheck:
+  test: ["CMD", "curl", "-f", "http://localhost"]
+  interval: 1m30s
+  timeout: 10s
+  retries: 3
+```
