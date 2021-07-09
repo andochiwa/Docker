@@ -439,7 +439,41 @@ networks:
 
 指定容器名称，默认会使用`项目名称_服务名称_序号`的格式
 
+```yaml
+container_name: docker-web-container
+```
+
 > 注意：指定容器名称后，该服务将无法扩展，因为 Docker 不允许多个容器具有相同的名称
+
+## build
+
+指定 `Dockerfile` 所在文件夹的路径（可以是绝对路径，或者相对 docker-compose.yml 文件的路径）。 `Compose` 将会利用它自动构建这个镜像，然后使用这个镜像。
+
+```yaml
+version: '3'
+services:
+
+  webapp:
+    build: ./dir
+```
+
+也可以使用 `context` 指令指定 `Dockerfile` 所在文件夹的路径。
+
+使用 `dockerfile` 指令指定 `Dockerfile` 文件名。
+
+使用 `arg` 指令指定构建镜像时的变量。
+
+```yaml
+version: '3'
+services:
+
+  webapp:
+    build:
+      context: ./dir                     # 指定Dockerfile文件目录
+      dockerfile: Dockerfile-alternate   # 指定Dockerfile文件的文件名
+      args:
+        buildno: 1
+```
 
 ## enviroment
 
