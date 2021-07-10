@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        namespace: 66d272a3-fd82-41d7-a86c-e95096d2a2c7
+        file-extension: yaml
+        extension-configs:
+          - data-id: mysql.yml
+            refresh: true
+          - data-id: mybatis-plus.yml
+            refresh: true
+          - data-id: nacos.yml
+            refresh: true
+
