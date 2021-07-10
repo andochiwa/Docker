@@ -32,6 +32,8 @@ services:
       - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&&serverTimezone=Japan
     networks:
       - web-demo
+    depends_on:
+      - mysql
 
 networks:
   web-demo:
