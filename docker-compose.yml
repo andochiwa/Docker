@@ -20,6 +20,20 @@ services:
     command: sh -c './wait-for mysql:3306 -- bin/docker-startup.sh'
     networks:
       - web-demo
+  web:
+    build: ./spring-cloud-web-demo
+    container_name: web-demo
+    depends_on:
+      - nacos
+    networks:
+      - web-demo
+  gateway:
+    build: ./spring-cloud-gateway-demo
+    container_name: gateway-demo
+    depends_on:
+      - nacos
+    networks:
+      - web-demo
 
 networks:
   web-demo:
