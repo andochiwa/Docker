@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:8.0.22
+    container_name: mysql
+    restart: always
+    ports:
+      - "3307:3306"
+    command:
+      --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d/
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+    networks:
+      - web-demo
+  nacos:
+    image: nacos/nacos-server:1.4.0
+    container_name: nacos
+    restart: always
+    ports:
+      - "8848:8848"
+    environment:
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=mysql
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_DB_NAME=nacos_demo_config
+      - MYSQL_SERVICE_USER=root
+      - MYSQL_SERVICE_PASSWORD=root
+      - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&&serverTimezone=Japan
+    networks:
+      - web-demo
+
+networks:
+  web-demo:
