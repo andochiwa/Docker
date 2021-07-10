@@ -19,7 +19,7 @@ import java.util.List;
  * @since 2021-07-11
  */
 @RestController
-@RequestMapping("/demo")
+@RequestMapping("/de")
 public class UserController {
 
     @Autowired
