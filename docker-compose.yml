@@ -22,6 +22,8 @@ services:
   web:
     build: ./spring-cloud-web-demo
     container_name: web-demo
+    ports:
+      - "8001:8001"
     depends_on:
       - nacos
     networks:
@@ -29,6 +31,8 @@ services:
   gateway:
     build: ./spring-cloud-gateway-demo
     container_name: gateway-demo
+    ports:
+      - "80:80"
     depends_on:
       - nacos
     networks:
