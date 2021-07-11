@@ -9,3 +9,4 @@ spring:
         extension-configs:
           - data-id: nacos.yml
             refresh: true
+        server-addr: nacos:8848
