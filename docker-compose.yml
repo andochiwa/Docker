@@ -28,6 +28,7 @@ services:
       - nacos
     networks:
       - web-demo
+    restart: always
   gateway:
     build: ./spring-cloud-gateway-demo
     container_name: gateway-demo
@@ -37,6 +38,6 @@ services:
       - nacos
     networks:
       - web-demo
-
+    restart: always
 networks:
   web-demo:
