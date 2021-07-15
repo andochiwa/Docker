@@ -7,7 +7,7 @@ services:
       dockerfile: ./Dockerfile-nacos
     container_name: nacos
     restart: always
-    entrypoint: /app/wait-for mysql:3306 -- bin/docker-startup.sh
+    entrypoint: /app/wait-for-it.sh mysql:3306 -- bin/docker-startup.sh
     depends_on:
       - mysql
     ports:
@@ -29,7 +29,7 @@ services:
       context: .
       dockerfile: ./spring-cloud-web-demo
     container_name: web-demo
-    entrypoint: ./wait-for nacos:8848 --
+    entrypoint: ./wait-for-it.sh nacos:8848 --
     ports:
       - "8001:8001"
     depends_on:
@@ -43,7 +43,7 @@ services:
       context: .
       dockerfile: ./spring-cloud-gateway-demo
     container_name: gateway-demo
-    entrypoint: ./wait-for nacos:8848 --
+    entrypoint: ./wait-for-it.sh nacos:8848 --
     ports:
       - "80:80"
     depends_on:
