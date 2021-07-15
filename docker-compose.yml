@@ -2,9 +2,12 @@ version: "3"
 
 services:
   nacos:
-    image: nacos/nacos-server:1.4.0
+    build: Dockerfile-nacos
     container_name: nacos
     restart: always
+    command: ["/app/wait-for", "mysql:3306", "--", "bin/docker-startup.sh"]
+    depends_on:
+      - mysql
     ports:
       - "8848:8848"
     environment:
@@ -26,6 +29,7 @@ services:
       - "8001:8001"
     depends_on:
       - nacos
+      - mysql
     networks:
       - web-demo
     restart: always
@@ -36,8 +40,23 @@ services:
       - "80:80"
     depends_on:
       - nacos
+      - mysql
     networks:
       - web-demo
     restart: always
+  mysql:
+    image: mysql:8.0.22
+    container_name: mysql
+    restart: always
+    ports:
+      - "3307:3306"
+    command:
+      --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d/
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+    networks:
+      - web-demo
 networks:
   web-demo:
