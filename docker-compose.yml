@@ -2,7 +2,9 @@ version: "3"
 
 services:
   nacos:
-    build: Dockerfile-nacos
+    build:
+      context: .
+      dockerfile: ./Dockerfile-nacos
     container_name: nacos
     restart: always
     entrypoint: /app/wait-for mysql:3306 -- bin/docker-startup.sh
@@ -23,7 +25,9 @@ services:
     networks:
       - web-demo
   web:
-    build: ./spring-cloud-web-demo
+    build:
+      context: .
+      dockerfile: ./spring-cloud-web-demo
     container_name: web-demo
     entrypoint: ./wait-for nacos:8848 --
     ports:
@@ -35,7 +39,9 @@ services:
       - web-demo
     restart: always
   gateway:
-    build: ./spring-cloud-gateway-demo
+    build:
+      context: .
+      dockerfile: ./spring-cloud-gateway-demo
     container_name: gateway-demo
     entrypoint: ./wait-for nacos:8848 --
     ports:
